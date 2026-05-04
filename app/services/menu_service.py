@@ -5,11 +5,11 @@ from app.config import PROJECT_ID, DATASET_ID
 def get_menu():
     query = f'''
     SELECT
-        item_name,
+        name,
         size,
         price
-    FROM `{PROJECT_ID}.{DATASET_ID}.menu`
-    ORDER BY item_name, size
+    FROM `{PROJECT_ID}.{DATASET_ID}.menu_items`
+    ORDER BY name, size
     '''
 
     results = client.query(query)
@@ -17,15 +17,15 @@ def get_menu():
     menu = {}
 
     for row in results:
-        name = row.item_name
+        n = row.name
 
-        if name not in menu:
-            menu[name] = {
-                "item_name": name,
+        if n not in menu:
+            menu[n] = {
+                "item_name": n,
                 "sizes": []
             }
 
-        menu[name]["sizes"].append({
+        menu[n]["sizes"].append({
             "size": str(row.size),
             "price": float(row.price)
         })
