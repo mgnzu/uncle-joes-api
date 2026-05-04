@@ -4,7 +4,7 @@ from app.config import PROJECT_ID, DATASET_ID
 
 def get_orders(member_id):
     query = f'''
-    SELECT 
+    SELECT
         o.order_id,
         o.order_date,
         o.order_total,
@@ -12,7 +12,8 @@ def get_orders(member_id):
         l.state,
         oi.item_name,
         oi.quantity,
-        oi.price
+        oi.price,
+        oi.size
     FROM `{PROJECT_ID}.{DATASET_ID}.orders` o
     JOIN `{PROJECT_ID}.{DATASET_ID}.locations` l
       ON o.store_id = l.id
@@ -38,7 +39,7 @@ def get_orders(member_id):
             orders[oid] = {
                 "order_id": oid,
                 "order_date": row.order_date.isoformat(),
-                "order_size": float(row.order_total),
+                "order_total": float(row.order_total),
                 "location": {
                     "city": row.city,
                     "state": row.state
@@ -49,7 +50,8 @@ def get_orders(member_id):
         orders[oid]["items"].append({
             "item_name": row.item_name,
             "quantity": int(row.quantity),
-            "price": float(row.price)
+            "price": float(row.price),
+            "size": str(row.size)
         })
 
     return list(orders.values())
@@ -68,4 +70,4 @@ def get_points(member_id):
     )
 
     result = list(client.query(query, job_config=job_config))
-    return result[0].points if result else 0
+    return int(result[0].points or 0) if result else 0
